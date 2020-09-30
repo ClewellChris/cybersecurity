@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Print the amount of free memory on the system and save it to ~/backups/freemem/free_mem.txt
+
+free -m -h > ~/backups/freemem/free_mem.txt
+
+# Print disk usage and save it to ~/backups/diskuse/disk_usage.txt
+
+sudo du -h > ~/backups/diskuse/disk_usage.txt
+
+# List all open files and save to ~/backups/openlist/open_list.txt
+
+sudo lsof /home > ~/backups/openlist/open_list.txt
+
+# Print file system disk space stats and save to ~/backups/freedisk/free_disk.txt
+
+sudo df -h > ~/backups/freedisk/free_disk.txt
+

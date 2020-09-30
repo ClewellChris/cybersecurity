@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# A bash script for listing Title, Todays Date, Username, IP Address, Hostname
+# DNS info, Memory, CPU, Disk Usage, and Current Users
+
+output=$HOME/research/sys_info.txt
+ip=$(ip addr | head -9 | tail -1)
+suids=$(find / -type f -perm /4000)
+commands=(
+'date'
+'uname -a'
+'hostname -s'
+)
+
+
+if [ ! -d $HOME/research ]
+then
+  mkdir $HOME/research
+fi
+
+if [ -f $output ]
+then
+  rm $output
+fi
+
+if [ $UID -ne = 0 ]
+then
+  echo "Please run this script with sudo."
+  exit
+fi
+
+for x in {0..2}
+do
+  results=$(${commands[$x]})
+  echo "Results of \"${commands[$x]}\" command:"
+  echo $results
+  echo ""
+done
+
+# Loop through /scripts folder and set all scripts to execute
+
+for script in $(ls ~/scripts)
+do
+ if [ ! -x ~/scripts/$script ]
+ then
+  chmod +x ~/scripts/$script
+ fi
+done
+
+
+echo "System Audit:" > $output
+date >> $output
+
+#Displaye Machine Info 
+echo "Machine Type Info:" >> $output
+echo $MACHTYPE >> $output
+
+#Display Username
+echo "Uname info:" >> $output
+uname -a >> $output
+
+#Display IP Info
+echo "IP Info:" >> $output
+echo $ip >> $output
+
+#Display Hostname
+echo "Hostname: $(hostname -s)" >> $output
+
+#Display DNS Servers
+echo "DNS Servers: " >> $output
+cat /etc/resolv.conf >> $output
+
+#Display Memory Info
+echo "Memory Info:" >> $output
+free >> $output
+
+#Display CPU Info
+echo "CPU Info:" >> $output
+lscpu | grep CPU >> $output
+
+#Display Disk Usage
+echo "Disk Usage:" >> $output
+df -H | head -2 >> $output
+
+#Display Log In Info
+echo "Who is logged in:" $output 
+who -a >> $output
+
+#Display files with SUID
+echo "SUID FILES:" >> $output
+echo $suids >> $output
+
+#Display Top 10 Processes
+echo "Top 10 Processes" >> $output
+ps aux --sort %mem | awk {'print $1, $2, $3, $4, $11'} | head >> $output
+fi
+
+
+
