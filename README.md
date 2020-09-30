@@ -1,2 +1,2 @@
 # cybersecurity
-Repository for Projects done during Cybersecurity Bootcamp 
+Repository for projects done during Cybersecurity bootcamp 
