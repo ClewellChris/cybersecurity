@@ -1,0 +1,7 @@
+Elk YAML/Diagram Set-Up
+IP Address Set: 10.1.0.0/16 
+Subnet 10.1.0.0/24
+Region US-East 2 
+ansible-playbook "playbook" to run 
+docker ps to see what's running 
+curl http://localhost:5601/app/kibana#/home
