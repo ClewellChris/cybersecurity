@@ -6,7 +6,9 @@ The files in this repository were used to configure the network depicted below.
 
 These files have been tested and used to generate a live ELK deployment on Azure. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the ELK file may be used to install only certain pieces of it, such as Filebeat.
 
-  - _TODO: Enter the playbook file._
+  - [Elk YML](/Ansible/Elk_YML.yml)
+  - [MetricBeat YML](/Ansible/MetricBeat_YML.yml)
+  - [Docker YML](/Ansible/Docker_YML.yml)
 
 This document contains the following details:
 - Description of the Topology
@@ -73,7 +75,7 @@ The playbook implements the following tasks:
 
 The following screenshot displays the result of running `docker ps` after successfully configuring the ELK instance.
 
-Images/ELK Snip.jpg
+![Elk Screenshot](/Diagrams/ELK.jpg)
 
 ### Target Machines & Beats
 This ELK server is configured to monitor the following machines:
@@ -96,7 +98,6 @@ SSH into the control node and follow the steps below:
 - Update the /ansible/host file to include the IP's of the servers you want to make your installs on 
 - Run the playbook, and navigate to http://elkserverip:5601/app/kibana navigate to Add Metrics > Docker Metrics and Add Log Data > System Logs to check that the installation worked as expected.  There will be a button at the bottom of each page to "Check Data" this will tell you if Kibana is receving data from your servers
 
-_TODO: Answer the following questions to fill in the blanks:_
 - The playbook file is install-elk-metricbeat-filebeat.yml, needs to be copied to /etc/ansible/roles
 - You will want to update the /etc/ansible/host file to include all the servers you want to configure.  Using your servers private IP to dicate which servers will get ELK and which will get FileBeat and MetricBeat
 - When you want to check your ELK sever information you will navigate to http://elkserverpublicip:5601/app/kibana 
