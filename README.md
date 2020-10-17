@@ -8,6 +8,7 @@ These files have been tested and used to generate a live ELK deployment on Azure
 
   - [Elk YML](/Ansible/Elk_YML.yml)
   - [MetricBeat YML](/Ansible/MetricBeat_YML.yml)
+  - [FileBeat YML](/Ansible/FileBeat_YML.yml)
   - [Docker YML](/Ansible/Docker_YML.yml)
 
 This document contains the following details:
@@ -98,11 +99,30 @@ SSH into the control node and follow the steps below:
 - Update the /ansible/host file to include the IP's of the servers you want to make your installs on 
 - Run the playbook, and navigate to http://elkserverip:5601/app/kibana navigate to Add Metrics > Docker Metrics and Add Log Data > System Logs to check that the installation worked as expected.  There will be a button at the bottom of each page to "Check Data" this will tell you if Kibana is receving data from your servers
 
-- The playbook file is install-elk-metricbeat-filebeat.yml, needs to be copied to /etc/ansible/roles
-- You will want to update the /etc/ansible/host file to include all the servers you want to configure.  Using your servers private IP to dicate which servers will get ELK and which will get FileBeat and MetricBeat
-- When you want to check your ELK sever information you will navigate to http://elkserverpublicip:5601/app/kibana 
+- The playbook files are Elk_YML.yml, Docker_YML.yml, and MetricBeat_YML.yml they need to be copied to /etc/ansible/roles
+- You will want to update the /etc/ansible/host file to include all the servers you want to configure.  Using your servers private IP to dictate which servers will get ELK and which will get FileBeat and MetricBeat
+- When you want to check your ELK sever information you will navigate to http://"elkserverpublicip":5601/app/kibana 
 
 Commands Overview: 
-- download elk playbook, elk-config, metric-config, filebeat-config, 
-- once downloaded use $ cp install-elk-filebeat-metricbeat.yml /etc/ansible/roles 
-- $ cp metric-config filebeat-config /etc/ansible/files
+Below are the in-depth commands for running and setting up the above ELK, MetricBeat, and DVWA playbooks.  This walkthrough is assuming you have a network set-up and have designated which servers you want to monitor and which servers you want to do the monitoring.  The entire environment above was built with a Jumpbox being the only access point for Admin. 
+
+
+1. Setting up DVWA Container
+  - To begin I set up 3 individual Webservers to run DVWA behind a Load Balancer to maintain redundancy. If you would like to set up servers to run a DVWA Container then follow along with the instructions below, if not then go to 2. Setting up ELK and MetricBeat and FileBeat. 
+  - Its best practice to setup up a secure system from the start.  I began with setting up a Jumpbox on Azure and used an SSH public key as the authentication type using a key I generated using `ssh-keygen`. 
+  - Go in to your Azure environment and go to your Jumpbox and go to "Reset Password" to add your ssh-key if you haven't already.  Your machine must be running to make any changes. 
+  - Once this is done you will want to make a change to your Security Group the Jumpbox is assgined to allow an SSH connection from your Host machine. 
+  - Now that we have that set up we can move on to adding the DVWA Container to the Web Servers. This starts with adding the `Docker_YML.yml` file to the /etc/ansible/roles. 
+  - Before you can run the playbook you'll want to update your /etc/ansible/host file to reflect the private ip's of the servers you want to add the DVWA Container to. In this VM they were named `webservers` if yours differ make that change to the `hosts:` section in the `Docker_YML.yml` file. 
+  - When adding the ip's in the /etc/hosts you will want to add `ansible_python_interpreter=/usr/bin/python3` at the end of the ip to force ansible to use python 3 on each machine we configure
+  - Next we will want to make edits to the `ansible.cfg` file.  When in the file you will want to edit the `remote_user` option to reflect the admin username that is used on the servers you want to add the DVWA container to. 
+  - Now we want to `ping` the servers to make sure we are getting a connection. Run `ansible -m ping "server name"`.  If it was successful it will show the ip's of the server| SUCCESS => .  If you don't see the success message you'll want to check your `/etc/ansible/hosts` and `ansible.cfg` files to make sure the Admin usernames and ip's are correct 
+  - Once we get success `pinging` our servers then we can run our `Docker_YML.yml` playbook.  Run `ansible-playbook Docker_YML.yml` from inside the folder that the file is in.
+  - The playbook will run through each server and make the updates. You should now be able to navigate to your DVWA set up with `http://[load-balancer-ip]/setup.php. 
+  - From here you can set up your DVWA server as you see fit. 
+
+
+
+2. Setting up ELK, MetricBeat, and FileBeat
+  - If you didn't go through the above DVWA set up we will need to go through some setup before we can run our playbooks. 
+  - Before we can run our playbooks we will need to designate which server(s) will host the ELK container and which will host the MetricBeat and FileBeat containers. Those changes are made in the `/etc/ansible/hosts` file and the
